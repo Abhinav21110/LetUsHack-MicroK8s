@@ -1,4 +1,4 @@
-# Letushack
+# LetUsHack
 
 ## Getting Started
 
@@ -23,7 +23,7 @@ cp .env.example .env.local
 
 ### 3. Initialize the Database
 
-####Note :
+#### Note:
 
 - If you already have a DB, please DELETE it and re-create it.
 
@@ -440,5 +440,16 @@ The leaderboard dynamically ranks users based on their total score:
 - Highlights top 3 users with gold, silver, bronze styling
 - Shows current user's rank and position
 - Auto-refreshes on page load
-#   L e t U s H a c k - M i c r o K 8 s  
+
+---
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
+
+ 
  
