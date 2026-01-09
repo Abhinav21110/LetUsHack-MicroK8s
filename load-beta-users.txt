@@ -1,0 +1,85 @@
+# Beta Test User Credentials (numeric user_ids)
+# Generated: 2025-11-14T11:35:19.669Z
+# Password used: letushack@1
+
+# Format: user_id:password # display name
+0001:letushack@1 # ZeroDay Collective
+0002:letushack@1 # Binary Basilisk
+0003:letushack@1 # Packet Phantoms
+0004:letushack@1 # Kernel Panic Crew
+0005:letushack@1 # Neon Nmap Squad
+0006:letushack@1 # Circuit Spectres
+0007:letushack@1 # Quantum Rooters
+0008:letushack@1 # Exploit Orchid
+0009:letushack@1 # Stack Smashers
+0010:letushack@1 # Tor Tessellate
+0011:letushack@1 # Shadow Sandbox
+0012:letushack@1 # Crypto Corsairs
+0013:letushack@1 # Packet Punks
+0014:letushack@1 # Rogue Router Gang
+0015:letushack@1 # Binary Barbarians
+0016:letushack@1 # Fuzzing Foxes
+0017:letushack@1 # Hex Hivemind
+0018:letushack@1 # Overflow Oracles
+0019:letushack@1 # Phreak Phalanx
+0020:letushack@1 # Neon Nexus Labs
+0021:letushack@1 # Signal Saboteurs
+0022:letushack@1 # Packet Paladins
+0023:letushack@1 # Rust Revenants
+0024:letushack@1 # Glitch Guild
+0025:letushack@1 # Binary Nyx
+0026:letushack@1 # Cobalt Ciphers
+0027:letushack@1 # Beacon Breachers
+0028:letushack@1 # Payload Pilots
+0029:letushack@1 # Stack Shamans
+0030:letushack@1 # NullRoute Ninjas
+0031:letushack@1 # Spectral Sockets
+0032:letushack@1 # Echo Exploiters
+0033:letushack@1 # Lambda Lurkers
+0034:letushack@1 # Bit Berserkers
+0035:letushack@1 # Cipher Centaurs
+0036:letushack@1 # Vector Valkyries
+0037:letushack@1 # Torment Trojans
+0038:letushack@1 # Packet Prophets
+0039:letushack@1 # Rootkit Rangers
+0040:letushack@1 # Flux Forensics
+0041:letushack@1 # Neon Net Nomads
+0042:letushack@1 # Binary Buccaneers
+0043:letushack@1 # Quantum Quokkas
+0044:letushack@1 # Echo Echelon
+0045:letushack@1 # Glitch Gestalt
+0046:letushack@1 # Sudo Sultans
+0047:letushack@1 # Packet Pioneers
+0048:letushack@1 # Fuzz Fjord
+0049:letushack@1 # Cipher Crew
+0050:letushack@1 # Root Ravens
+0051:letushack@1 # Binary Bastion
+0052:letushack@1 # Neon Nullifiers
+0053:letushack@1 # Kernel Knights
+0054:letushack@1 # Stack Specters
+0055:letushack@1 # Vector Vipers
+0056:letushack@1 # Packet Prysm
+0057:letushack@1 # Tor Tacticians
+0058:letushack@1 # Echo Engineers
+0059:letushack@1 # Ghost Gatekeepers
+0060:letushack@1 # Fuzz Furies
+0061:letushack@1 # Binary Brokers
+0062:letushack@1 # Neon Nether
+0063:letushack@1 # Cipher Coven
+0064:letushack@1 # Root Resonance
+0065:letushack@1 # Packet Praetors
+0066:letushack@1 # Quantum Quarry
+0067:letushack@1 # Stack Sabers
+0068:letushack@1 # Tor Tracers
+0069:letushack@1 # Echo Eidolons
+0070:letushack@1 # Glitch Garrison
+0071:letushack@1 # Bit Bionic
+0072:letushack@1 # Null Nebula
+0073:letushack@1 # Cipher Command
+0074:letushack@1 # Root Rioters
+0075:letushack@1 # Packet Paragons
+0076:letushack@1 # Flux Fathom
+0077:letushack@1 # Neon Nomads
+0078:letushack@1 # Beta Team 78
+0079:letushack@1 # Beta Team 79
+0080:letushack@1 # Beta Team 80

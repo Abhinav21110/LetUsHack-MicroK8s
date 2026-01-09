@@ -1,0 +1,22 @@
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: *
+Allow: /
+
+# Development paths - should be removed in production
+Disallow: /uploads/
+Disallow: /admin/
+Disallow: /.well-known/
+Disallow: /api/internal/
+
+# Debug endpoint: Use nmap --script http-enum to find .listing files

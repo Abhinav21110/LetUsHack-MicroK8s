@@ -1,0 +1,37 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: shell-sudo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull latest changes
+        run: |
+          sudo git config --global --add safe.directory /home/letushack/Prod/basic-website-gitea
+          cd /home/letushack/Prod/basic-website-gitea
+          sudo git fetch --all
+          sudo git reset --hard origin/main
+
+      - name: Install + Build on server
+        run: |
+          cd /home/letushack/Prod/basic-website-gitea
+
+          echo "Installing only necessary modules..."
+          sudo npm install --legacy-peer-deps
+
+          echo "Building production version..."
+          sudo node ci-build.js
+
+      - name: Restart app
+        run: |
+          echo "Restarting PM2 (root mode)..."
+          sudo pm2 restart /home/letushack/Prod/basic-website-gitea/ecosystem.config.js --update-env
+          sudo pm2 save

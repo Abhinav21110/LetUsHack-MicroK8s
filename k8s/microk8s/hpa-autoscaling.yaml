@@ -1,0 +1,102 @@
+---
+# Horizontal Pod Autoscaler for lab workloads
+# Scales pods based on CPU and memory utilization
+# This enables dynamic scaling without code changes
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: lab-workload-hpa
+  namespace: letushack
+  labels:
+    app.letushack.com/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: lab-workload  # Template - replace with actual deployment name
+  minReplicas: 1
+  maxReplicas: 10
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 15
+      - type: Pods
+        value: 2
+        periodSeconds: 15
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# HPA for OS container workloads
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: os-container-hpa
+  namespace: letushack
+  labels:
+    app.letushack.com/component: autoscaling
+    app.letushack.com/workload-type: os
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: os-container  # Template - replace with actual deployment name
+  minReplicas: 1
+  maxReplicas: 15
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
+      policies:
+      - type: Percent
+        value: 25
+        periodSeconds: 30
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 5
+        periodSeconds: 15
+      selectPolicy: Max
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 85

@@ -1,0 +1,16 @@
+{
+  "app": "FoodNow",
+  "version": "1.0.0",
+  "environment": "training",
+  "config": {
+    "database_url": "localhost:5432",
+    "redis_url": "localhost:6379",
+    "debug_mode": false
+  },
+  "internal": {
+    "backup_enabled": true,
+    "maintenance_mode": false,
+    "flag_medium": "THM{MEDIUM_FLAG_NONSTANDARD_PORT_DISCOVERED_0d9b1a3bcf4d1b}",
+    "discovery_hint": "Use nmap --script http-robots.txt for next challenge"
+  }
+}

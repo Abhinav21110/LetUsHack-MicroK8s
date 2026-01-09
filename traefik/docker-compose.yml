@@ -1,0 +1,31 @@
+services:
+  traefik:
+    image: traefik:v2.11
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.watch=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80 #! Change this port if u want traefik to run elsewhere.
+      - --log.level=DEBUG
+      # Optional TLS (uncomment when you want HTTPS locally):
+      # - --entrypoints.websecure.address=:443
+      # - --certificatesresolvers.dev.acme.tlschallenge=true
+      # - --certificatesresolvers.dev.acme.email=you@example.com
+      # - --certificatesresolvers.dev.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "20015:80" #! Change this port if u want traefik to run elsewhere.
+      - "8080:8080" # Traefik dashboard: http://localhost:8080
+      # Optional TLS:
+      # - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Optional for TLS:
+      # - ./letsencrypt:/letsencrypt
+    networks:
+      - traefik-net
+
+networks:
+  traefik-net:
+    name: traefik-net # fixed network name (no project-based prefix)
+    driver: bridge

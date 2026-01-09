@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>FoodNow - Professional Food Delivery Training Lab</title>
+		<meta
+			name="description"
+			content="FoodNow - Authorized training environment for food delivery service simulation" />
+		<meta name="author" content="FoodNow Lab" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap"
+			rel="stylesheet" />
+
+		<meta
+			property="og:title"
+			content="FoodNow - Professional Food Delivery Training Lab" />
+		<meta
+			property="og:description"
+			content="Authorized training environment for food delivery service simulation" />
+		<meta property="og:type" content="website" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<style>
+			.hidden-listing {
+				position: absolute;
+				left: -9999px;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="root"></div>
+
+		<!-- Easy flag hint: Use nmap --script http-enum for directory discovery -->
+		<div id="uploads-listing" class="hidden-listing">
+			<h1>Index of /uploads/</h1>
+			<pre>
+<a href="../">../</a>
+<a href="flag_easy.txt">flag_easy.txt</a>                     2025-11-05 10:30     45
+<a href="readme.txt">readme.txt</a>                         2025-11-05 10:30    128
+      </pre>
+		</div>
+
+		<script type="module" src="/src/main.tsx"></script>
+
+		<!-- Medium flag hint: Use nmap --script http-methods,http-headers for API discovery -->
+		<!-- API_DISCOVERY: nmap --script http-enum --script-args http-enum.basepath="/api/" -->
+		<!-- FLAG_LOCATION_MEDIUM: /api/config.json contains configuration data -->
+
+		<script>
+			// Hard flag hint: Use nmap --script http-robots.txt,http-backup-finder
+			const appConfig = {
+				version: "1.0.0",
+				debug: false,
+				// Production config - DO NOT EXPOSE
+				internal: {
+					backup_service: "http://localhost:8083",
+					maintenance_endpoint: "/admin/status.json",
+					// enumeration_hint: "nmap --script http-grep for debug endpoints"
+				},
+			};
+		</script>
+		<script src="/config.js"></script>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
+</html>

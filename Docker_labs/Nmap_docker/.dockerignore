@@ -1,0 +1,11 @@
+# Exclude dependencies and build outputs from context
+node_modules/
+dist/
+.bun/
+.cache/
+.git/
+.gitignore
+Dockerfile.*
+.DS_Store
+npm-debug.log*
+yarn-error.log*

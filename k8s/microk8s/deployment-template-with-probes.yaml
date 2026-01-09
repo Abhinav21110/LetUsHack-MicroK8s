@@ -1,0 +1,139 @@
+---
+# Example Deployment with liveness/readiness probes and resource limits
+# This template demonstrates self-healing capabilities added by MicroK8s upgrade
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab-workload-template
+  namespace: letushack
+  labels:
+    app.letushack.com/workload-type: lab
+    app.letushack.com/managed-by: letushack-platform
+spec:
+  replicas: 1  # HPA will manage this dynamically
+  selector:
+    matchLabels:
+      app: lab-workload
+      app.letushack.com/workload-type: lab
+  template:
+    metadata:
+      labels:
+        app: lab-workload
+        app.letushack.com/workload-type: lab
+        app.letushack.com/tenant: user
+    spec:
+      # Restart policy for self-healing
+      restartPolicy: Always
+      
+      # Security context
+      securityContext:
+        runAsNonRoot: false  # Some labs require root
+        fsGroup: 1000
+      
+      containers:
+      - name: lab-container
+        image: letushack/lab-image:latest  # Replace with actual image
+        
+        # Resource requests and limits (required for HPA)
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        
+        # Liveness probe - restarts container if unhealthy
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        # Readiness probe - removes from service if not ready
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        
+        # Startup probe - allows slow-starting containers
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+        
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        
+        # Volume mounts for persistent data
+        volumeMounts:
+        - name: lab-data
+          mountPath: /data
+      
+      volumes:
+      - name: lab-data
+        persistentVolumeClaim:
+          claimName: lab-data-pvc
+
+---
+# PersistentVolumeClaim for lab data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lab-data-pvc
+  namespace: letushack
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: microk8s-hostpath
+
+---
+# Service for lab workload
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab-workload-service
+  namespace: letushack
+  labels:
+    app.letushack.com/workload-type: lab
+spec:
+  type: ClusterIP
+  selector:
+    app: lab-workload
+    app.letushack.com/workload-type: lab
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http

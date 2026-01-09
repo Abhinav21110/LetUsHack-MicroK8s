@@ -1,0 +1,148 @@
+---
+# OS Container Deployment with enhanced reliability
+# Demonstrates self-healing, autoscaling, and persistent storage
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: os-container-template
+  namespace: letushack
+  labels:
+    app.letushack.com/workload-type: os
+    app.letushack.com/managed-by: letushack-platform
+spec:
+  replicas: 1  # HPA manages scaling
+  selector:
+    matchLabels:
+      app: os-container
+      app.letushack.com/workload-type: os
+  template:
+    metadata:
+      labels:
+        app: os-container
+        app.letushack.com/workload-type: os
+        app.letushack.com/tenant: user
+    spec:
+      restartPolicy: Always
+      
+      # Security context for OS containers (may need privileged)
+      securityContext:
+        runAsNonRoot: false
+        fsGroup: 0
+      
+      containers:
+      - name: os-container
+        image: letushack/os-container:latest  # Replace with actual image
+        
+        # Higher resource limits for OS containers
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+        
+        # TCP-based liveness probe for OS containers
+        livenessProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 30
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        # Exec-based readiness probe
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "systemctl is-system-running || exit 0"
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        # Startup probe with longer timeout
+        startupProbe:
+          tcpSocket:
+            port: 22
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 12
+        
+        ports:
+        - containerPort: 22
+          name: ssh
+          protocol: TCP
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        
+        env:
+        - name: CONTAINER_TYPE
+          value: "os"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        
+        volumeMounts:
+        - name: os-data
+          mountPath: /home
+        - name: os-config
+          mountPath: /etc/letushack
+      
+      volumes:
+      - name: os-data
+        persistentVolumeClaim:
+          claimName: os-data-pvc
+      - name: os-config
+        configMap:
+          name: os-container-config
+          optional: true
+
+---
+# PVC for OS container data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: os-data-pvc
+  namespace: letushack
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: microk8s-hostpath
+
+---
+# Service for OS container
+apiVersion: v1
+kind: Service
+metadata:
+  name: os-container-service
+  namespace: letushack
+  labels:
+    app.letushack.com/workload-type: os
+spec:
+  type: ClusterIP
+  selector:
+    app: os-container
+    app.letushack.com/workload-type: os
+  ports:
+  - port: 22
+    targetPort: 22
+    protocol: TCP
+    name: ssh
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http

@@ -1,0 +1,26 @@
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: letushack-global-isolation
+spec:
+  selector: app.letushack.com/tenant == 'user'
+  types:
+  - Ingress
+  - Egress
+  
+  # Deny all traffic between user namespaces
+  ingress:
+  - action: Deny
+    source:
+      namespaceSelector: app.letushack.com/tenant == 'user'
+    destination:
+      namespaceSelector: app.letushack.com/tenant == 'user'
+  
+  egress:
+  - action: Deny
+    source:
+      namespaceSelector: app.letushack.com/tenant == 'user'
+    destination:
+      namespaceSelector: app.letushack.com/tenant == 'user'
+  
+  order: 100  # Low priority, specific policies override

@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-platform-services
+spec:
+  podSelector:
+    matchLabels:
+      app.letushack.com/tenant: user
+  policyTypes:
+  - Egress
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  
+  # Allow main app API (for flag validation, etc.)
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: letushack
+      podSelector:
+        matchLabels:
+          app: letushack-main
+    ports:
+    - protocol: TCP
+      port: 3000

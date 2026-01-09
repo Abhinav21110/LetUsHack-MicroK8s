@@ -1,0 +1,66 @@
+import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { Pool } from 'pg';
+import { signToken } from '@/lib/auth-edge';
+
+const pool = new Pool({
+  host: process.env.PGHOST || 'localhost',
+  port: parseInt(process.env.PGPORT || '5432'),
+  user: process.env.PGUSER || 'postgres',
+  password: process.env.PGPASSWORD,
+  database: process.env.PGDATABASE || 'letushack_db',
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { roll_number, password } = body || {};
+
+    if (!roll_number || !password) {
+      return NextResponse.json({ error: true, message: 'Missing required fields' }, { status: 400 });
+    }
+
+    const { rows } = await pool.query(
+      'SELECT id, roll_number, password_hash, ip_address, last_activity, created_at FROM users WHERE roll_number = $1',
+      [roll_number]
+    );
+    if (rows.length === 0) {
+      return NextResponse.json({ error: true, message: 'Invalid credentials' }, { status: 401 });
+    }
+
+    const user = rows[0];
+    const match = await bcrypt.compare(password, user.password_hash);
+    if (!match) {
+      return NextResponse.json({ error: true, message: 'Invalid credentials' }, { status: 401 });
+    }
+
+    const ip = (req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()) || req.headers.get('x-real-ip') || '';
+    await pool.query('UPDATE users SET last_activity = NOW(), ip_address = $1 WHERE id = $2', [ip, user.id]);
+
+    const token = await signToken({ id: user.id, roll_number: user.roll_number });
+
+    // K_LOG: signin
+    // eslint-disable-next-line no-console
+    console.log('[LOGIN]', { roll_number, ip, at: new Date().toISOString() });
+
+    // Create response with redirect to dashboard
+    const response = NextResponse.redirect(new URL('/dashboard', req.url), {
+      status: 303  // See Other
+    });
+    
+    // Set JWT token in HTTP-only cookie
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      // 24 hours from now
+      maxAge: 60 * 60 * 24
+    });
+    
+    return response;
+  } catch (err: any) {
+    const msg = err?.message || 'Login failed';
+    return NextResponse.json({ error: true, message: msg }, { status: 500 });
+  }
+}

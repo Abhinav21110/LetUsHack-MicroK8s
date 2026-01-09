@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  labels:
+    app.letushack.com/policy-type: baseline
+spec:
+  # Deny all ingress and egress by default
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress

@@ -1,0 +1,4 @@
+# Directory listing - discovered via nmap --script http-enum
+flag_easy.txt
+flag_hard.txt
+# Use nmap --script http-backup-finder for more files

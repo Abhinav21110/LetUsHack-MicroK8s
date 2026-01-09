@@ -1,0 +1,47 @@
+---
+# PodDisruptionBudget ensures minimum availability during voluntary disruptions
+# (node maintenance, upgrades, scaling down)
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: lab-workload-pdb
+  namespace: letushack
+  labels:
+    app.letushack.com/component: reliability
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.letushack.com/workload-type: lab
+  unhealthyPodEvictionPolicy: IfHealthyBudget
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: os-container-pdb
+  namespace: letushack
+  labels:
+    app.letushack.com/component: reliability
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.letushack.com/workload-type: os
+  unhealthyPodEvictionPolicy: IfHealthyBudget
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: platform-services-pdb
+  namespace: letushack
+  labels:
+    app.letushack.com/component: reliability
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.letushack.com/tenant: platform
+  unhealthyPodEvictionPolicy: IfHealthyBudget

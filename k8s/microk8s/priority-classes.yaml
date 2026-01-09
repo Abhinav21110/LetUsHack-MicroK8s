@@ -1,0 +1,38 @@
+---
+# Priority Classes for workload prioritization
+# Ensures critical platform services are scheduled first
+
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: letushack-critical
+value: 1000000
+globalDefault: false
+description: "Critical platform services that must always run"
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: letushack-high
+value: 10000
+globalDefault: false
+description: "High priority user workloads (OS containers)"
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: letushack-normal
+value: 1000
+globalDefault: true
+description: "Normal priority workloads (labs, challenges)"
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: letushack-low
+value: 100
+globalDefault: false
+description: "Low priority background tasks"

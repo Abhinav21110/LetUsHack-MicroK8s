@@ -1,0 +1,86 @@
+version: "3.8"
+
+services:
+  # Main Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+      - /var/run/docker.sock:/var/run/docker.sock # Mount docker sock to manage containers
+    environment:
+      - PGHOST=db
+      - PGPORT=5432
+      - PGDATABASE=${PGDATABASE}
+      - PGUSER=${PGUSER}
+      - PGPASSWORD=${PGPASSWORD}
+      - JWT_SECRET_LOCAL=${JWT_SECRET_LOCAL}
+      - TRAEFIK_NETWORK=traefik-net # Explicitly set the network for docker-service.ts
+      - HOST_URL=http://localhost:3000
+      - LAB_ORIGIN_URL=http://localhost
+    depends_on:
+      - db
+    networks:
+      - default
+      - traefik-net
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v3.0
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.watch=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --log.level=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080" # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik-net
+
+  # Service to build the XSS lab image
+  xss-lab:
+    build: ./Docker_labs/XSS_docker
+    image: xss_lab # Ensure the image name is consistent
+    # This service is only for building the image, not for running.
+    # It won't be started by 'docker-compose up'.
+    command: ["echo", "Building XSS lab image..."]
+
+  # Service to build the CSRF lab image
+  csrf-lab:
+    build: ./Docker_labs/CSRF_docker-main
+    image: csrf_lab # Ensure the image name is consistent
+    command: ["echo", "Building CSRF lab image..."]
+
+networks:
+  default:
+    driver: bridge
+  traefik-net:
+    name: traefik-net
+    driver: bridge
+
+volumes:
+  postgres_data:
